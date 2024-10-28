@@ -86,12 +86,15 @@ endif
 
 uninstallable_test_programs += \
 	test-bus \
-	test-bus-dispatch \
 	test-bus-dispatch-sha1 \
 	test-marshal-recursive \
 	test-message-internals \
 	test-strings \
 	$(NULL)
+
+if ENABLE_TRADITIONAL_ACTIVATION
+uninstallable_test_programs += test-normal-activation
+endif
 
 if DBUS_UNIX
 test_counter_SOURCES = internals/counter.c
@@ -100,6 +103,8 @@ test_counter_LDADD = libdbus-testutils.la
 if ENABLE_TRADITIONAL_ACTIVATION
 uninstallable_test_programs += test-bus-launch-helper-oom
 uninstallable_test_programs += test-bus-system
+uninstallable_test_programs += test-failed-helper-activation
+uninstallable_test_programs += test-helper-activation
 # this is used by the tests but is not, itself, a test
 TEST_BINARIES += dbus-daemon-launch-helper-for-tests
 endif ENABLE_TRADITIONAL_ACTIVATION
@@ -207,19 +212,13 @@ test_bus_system_LDADD = \
 	libdbus-testutils.la \
 	$(NULL)
 
-test_bus_SOURCES = bus/main.c
+test_bus_SOURCES = bus/main.c bus/common.c bus/common.h
 test_bus_LDADD = \
 	$(top_builddir)/bus/libdbus-daemon-internal.la \
 	libdbus-testutils.la \
 	$(NULL)
 
-test_bus_dispatch_SOURCES = bus/dispatch.c
-test_bus_dispatch_LDADD = \
-	$(top_builddir)/bus/libdbus-daemon-internal.la \
-	libdbus-testutils.la \
-	$(NULL)
-
-test_bus_dispatch_sha1_SOURCES = bus/dispatch-sha1.c
+test_bus_dispatch_sha1_SOURCES = bus/dispatch-sha1.c bus/common.c bus/common.h
 test_bus_dispatch_sha1_LDADD = \
 	$(top_builddir)/bus/libdbus-daemon-internal.la \
 	libdbus-testutils.la \
@@ -227,6 +226,26 @@ test_bus_dispatch_sha1_LDADD = \
 
 test_hash_SOURCES = internals/hash.c
 test_hash_LDADD = libdbus-testutils.la
+
+test_failed_helper_activation_SOURCES = \
+	bus/failed-helper-activation.c \
+	bus/common.c \
+	bus/common.h \
+	$(NULL)
+test_failed_helper_activation_LDADD = \
+	$(top_builddir)/bus/libdbus-daemon-internal.la \
+	libdbus-testutils.la \
+	$(NULL)
+
+test_helper_activation_SOURCES = \
+	bus/helper-activation.c \
+	bus/common.c \
+	bus/common.h \
+	$(NULL)
+test_helper_activation_LDADD = \
+	$(top_builddir)/bus/libdbus-daemon-internal.la \
+	libdbus-testutils.la \
+	$(NULL)
 
 test_marshal_recursive_SOURCES = \
 	internals/dbus-marshal-recursive-util.c \
@@ -264,6 +283,16 @@ test_misc_internals_SOURCES = \
 	internals/sha.c \
 	$(NULL)
 test_misc_internals_LDADD = libdbus-testutils.la
+
+test_normal_activation_SOURCES = \
+	bus/normal-activation.c \
+	bus/common.c \
+	bus/common.h \
+	$(NULL)
+test_normal_activation_LDADD = \
+	$(top_builddir)/bus/libdbus-daemon-internal.la \
+	libdbus-testutils.la \
+	$(NULL)
 
 EXTRA_DIST += dbus-test-runner
 
