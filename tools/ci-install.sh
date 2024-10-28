@@ -188,7 +188,7 @@ if [ "$ci_local_packages" = yes ]; then
                 bzip2
                 expat
                 gcc-libs
-                gettext
+                gettext-runtime
                 glib2
                 iconv
                 libffi
